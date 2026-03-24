@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build-ios:
-    runs-on: macos-15
+    runs-on: macos-14
     timeout-minutes: 60
 
     steps:
@@ -23,10 +23,11 @@ jobs:
           submodules: recursive
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
-
-      - name: Install iOS platform
-        run: xcodebuild -downloadPlatform iOS
+        run: |
+          # macos-14 has Xcode 15.4 and 16.0 with iOS SDK pre-installed
+          ls /Applications/Xcode*.app
+          sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
 
       - name: Show build environment
         run: |
