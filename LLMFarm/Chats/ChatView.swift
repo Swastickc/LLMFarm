@@ -6,6 +6,68 @@
 
 import SwiftUI
 
+// MARK: - Suggested Prompts
+
+private let suggestedPrompts: [(icon: String, text: String)] = [
+    ("lightbulb", "Explain quantum computing in simple terms"),
+    ("text.book.closed", "Summarize the plot of Romeo and Juliet"),
+    ("terminal", "Write a Python function to sort a list"),
+    ("globe", "What are the top 5 most spoken languages?"),
+    ("heart", "Give me a healthy meal plan for one day"),
+    ("pencil.and.outline", "Help me write a professional email"),
+]
+
+// MARK: - Suggested Prompts View
+
+private struct SuggestedPromptsView: View {
+    var onSelect: (String) -> Void
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12),
+    ]
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            Image(systemName: "bubble.left.and.text.bubble.right")
+                .font(.system(size: 40))
+                .foregroundStyle(.secondary)
+            Text("Start a conversation")
+                .font(.title3.weight(.semibold))
+            Text("Try one of these prompts or type your own")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(suggestedPrompts, id: \.text) { prompt in
+                    Button {
+                        onSelect(prompt.text)
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: prompt.icon)
+                                .font(.body)
+                                .foregroundStyle(.accentColor)
+                                .frame(width: 24)
+                            Text(prompt.text)
+                                .font(.subheadline)
+                                .multilineTextAlignment(.leading)
+                                .foregroundStyle(.primary)
+                        }
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+            Spacer()
+        }
+        .padding()
+    }
+}
+
 struct ChatView: View {
     
     @EnvironmentObject var aiChatModel: AIChatModel
@@ -147,6 +209,12 @@ struct ChatView: View {
             }
             ScrollViewReader { scrollView in
                 VStack {
+                    if aiChatModel.messages.isEmpty && chatSelection != nil {
+                        SuggestedPromptsView { prompt in
+                            inputText = prompt
+                        }
+                        .frame(maxHeight: .infinity)
+                    }
                     List {
                         ForEach(aiChatModel.messages, id: \.id) { message in
                             MessageView(message: message, chatStyle: $chatStyle,status: nil ).id(message.id)

@@ -33,6 +33,48 @@ struct LLMFarmApp: App {
     
     var body: some Scene {
         WindowGroup {
+#if os(iOS)
+            TabView(selection: $tabIndex) {
+                // Tab 0: Chats (existing)
+                NavigationSplitView {
+                    ChatListView(tabSelection: $tabIndex,
+                                 model_name:$model_name,
+                                 title: $title,
+                                 add_chat_dialog:$add_chat_dialog,
+                                 close_chat:close_chat,
+                                 edit_chat_dialog:$edit_chat_dialog,
+                                 chat_selection:$chat_selection,
+                                 after_chat_edit: $after_chat_edit
+                    ).environmentObject(fineTuneModel)
+                        .environmentObject(aiChatModel)
+                        .frame(minWidth: 250, maxHeight: .infinity)
+                } detail: {
+                    ChatView(
+                        modelName: $model_name,
+                        chatSelection: $chat_selection,
+                        title: $title,
+                        CloseChat:close_chat,
+                        AfterChatEdit: $after_chat_edit,
+                        addChatDialog:$add_chat_dialog,
+                        editChatDialog:$edit_chat_dialog
+                    ).environmentObject(aiChatModel).environmentObject(orientationInfo)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .navigationSplitViewStyle(.balanced)
+                .tabItem {
+                    Label("Chats", systemImage: "bubble.left.and.bubble.right")
+                }
+                .tag(0)
+
+                // Tab 1: Hub (new — HuggingFace model browser)
+                HFModelPickerView()
+                    .tabItem {
+                        Label("Hub", systemImage: "square.grid.2x2")
+                    }
+                    .tag(1)
+            }
+            .background(.ultraThinMaterial)
+#else
             NavigationSplitView()  {
                 ChatListView(tabSelection: .constant(0),
                              model_name:$model_name,
@@ -64,6 +106,7 @@ struct LLMFarmApp: App {
         }
         .navigationSplitViewStyle(.balanced)
         .background(.ultraThinMaterial)
+#endif
         }        
     }
 }

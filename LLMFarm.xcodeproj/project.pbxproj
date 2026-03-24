@@ -114,6 +114,10 @@
 		15F210962A1920AA0021F414 /* AIChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F210922A1920AA0021F414 /* AIChatModel.swift */; };
 		15F210AA2A1A659B0021F414 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F210A92A1A659B0021F414 /* Helpers.swift */; };
 		15FB67422B1BDB0800174379 /* ExportLoraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FB67412B1BDB0800174379 /* ExportLoraView.swift */; };
+		AA0HF0012E81A00100AABB01 /* HFModelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0HF0022E81A00100AABB01 /* HFModelStore.swift */; };
+		AA0HF0032E81A00100AABB02 /* HFDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0HF0042E81A00100AABB02 /* HFDownloadManager.swift */; };
+		AA0HF0052E81A00100AABB03 /* HFModelPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0HF0062E81A00100AABB03 /* HFModelPickerView.swift */; };
+		AA0HF0072E81A00100AABB04 /* ModelLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0HF0082E81A00100AABB04 /* ModelLibraryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -272,6 +276,10 @@
 		E61E38F529B1F12E00114C15 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E624E2102958F21E00996CD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0215CD42E314FA70037973B /* llama.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = llama.xcframework; sourceTree = "<group>"; };
+		AA0HF0022E81A00100AABB01 /* HFModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HFModelStore.swift; sourceTree = "<group>"; };
+		AA0HF0042E81A00100AABB02 /* HFDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HFDownloadManager.swift; sourceTree = "<group>"; };
+		AA0HF0062E81A00100AABB03 /* HFModelPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HFModelPickerView.swift; sourceTree = "<group>"; };
+		AA0HF0082E81A00100AABB04 /* ModelLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelLibraryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -505,9 +513,21 @@
 			path = ModelTest;
 			sourceTree = "<group>";
 		};
+		AA0HF0092E81A00100AABB05 /* HuggingFace */ = {
+			isa = PBXGroup;
+			children = (
+				AA0HF0022E81A00100AABB01 /* HFModelStore.swift */,
+				AA0HF0042E81A00100AABB02 /* HFDownloadManager.swift */,
+				AA0HF0062E81A00100AABB03 /* HFModelPickerView.swift */,
+				AA0HF0082E81A00100AABB04 /* ModelLibraryView.swift */,
+			);
+			path = HuggingFace;
+			sourceTree = "<group>";
+		};
 		15F2107F2A191B190021F414 /* LLMFarm */ = {
 			isa = PBXGroup;
 			children = (
+				AA0HF0092E81A00100AABB05 /* HuggingFace */,
 				15DFE6162CCD1F8900E359F9 /* UIComponents */,
 				15DFE60D2CC549E400E359F9 /* RAG */,
 				152838242BEAB19E000D8B82 /* Intents */,
@@ -866,6 +886,10 @@
 				155B4A7B2CE4F00900AE5E88 /* DocQueryIntent.swift in Sources */,
 				1524FB732CC2D13200E99C3F /* AppSettingsView.swift in Sources */,
 				151746A22B585B030074FF35 /* LLMTextInput.swift in Sources */,
+				AA0HF0012E81A00100AABB01 /* HFModelStore.swift in Sources */,
+				AA0HF0032E81A00100AABB02 /* HFDownloadManager.swift in Sources */,
+				AA0HF0052E81A00100AABB03 /* HFModelPickerView.swift in Sources */,
+				AA0HF0072E81A00100AABB04 /* ModelLibraryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

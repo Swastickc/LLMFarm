@@ -22,14 +22,17 @@ struct MessageView: View {
             case .user:
                 Text("You")
                     .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundColor(.accentColor)
             case .user_rag:
                 Text("RAG")
                     .font(.caption)
-                    .foregroundColor(.accentColor)
+                    .fontWeight(.medium)
+                    .foregroundColor(.orange)
             case .system:
                 Text(current_model)
                     .font(.caption)
+                    .fontWeight(.medium)
                     .foregroundColor(.accentColor)
             }
         }
@@ -45,11 +48,13 @@ struct MessageView: View {
         var body: some View {
             switch message.state {
             case .none:
-                VStack(alignment: .leading) {
-                    ProgressView()
+                VStack(alignment: .leading, spacing: 6) {
+                    ThreeDots(dotsColor: .accentColor)
+                        .frame(height: 20)
                     if status != nil{
                         Text(status!)
                             .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -84,7 +89,6 @@ struct MessageView: View {
                                 }
                             )
                             .buttonStyle(.borderless)
-                            //                        .frame(maxWidth:50,maxHeight: 50)
                             if showRag{
                                 Text(LocalizedStringKey(message.text)).font(.footnote).textSelection(.enabled)
                             }
@@ -96,11 +100,12 @@ struct MessageView: View {
                 }.textSelection(.enabled)
 
             case .predicting:
-                HStack {
-                    Text(message.text).textSelection(.enabled)
-                    ProgressView()
-                        .padding(.leading, 3.0)
-                        .frame(maxHeight: .infinity,alignment: .bottom)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(message.text + "▍")
+                        .textSelection(.enabled)
+                    ThreeDots(dotsColor: .accentColor)
+                        .frame(height: 16)
+                        .padding(.top, 2)
                 }.textSelection(.enabled)
 
             case .predicted(totalSecond: let totalSecond):
@@ -135,15 +140,17 @@ struct MessageView: View {
                 Spacer()
             }
 
-            VStack(alignment: .leading, spacing: 6.0) {
+            VStack(alignment: message.sender == .user ? .trailing : .leading, spacing: 6.0) {
                 SenderView(sender: message.sender)
                 MessageContentView(message: message, 
                                    chatStyle: $chatStyle,
                                    status:$status,
                                    sender: message.sender)
                     .padding(12.0)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(12.0)
+                    .background(message.sender == .user
+                                ? Color.accentColor.opacity(0.12)
+                                : Color.secondary.opacity(0.15))
+                    .cornerRadius(16.0)
             }
 
             if message.sender == .system {

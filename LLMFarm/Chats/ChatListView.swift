@@ -121,7 +121,14 @@ struct ChatListView: View {
                     Text("Start new chat")
                         .font(.title3)
                         .frame(maxWidth: .infinity)
-                    
+#if os(iOS)
+                    Button {
+                        tabSelection = 1
+                    } label: {
+                        Label("Browse HuggingFace →", systemImage: "square.grid.2x2")
+                    }
+                    .padding(.top, 8)
+#endif
                     
                 }.opacity(0.4)
                     .frame(maxWidth: .infinity,alignment: .center)
@@ -134,6 +141,16 @@ struct ChatListView: View {
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
+#if os(iOS)
+                    Button {
+                        tabSelection = 1
+                    } label: {
+                        HStack {
+                            Text("Browse HuggingFace")
+                            Image(systemName: "square.grid.2x2")
+                        }
+                    }
+#endif
                     Button {
                         toggleSettings = true
                     } label: {

@@ -127,6 +127,19 @@ struct ChatSettingsView: View {
         self._after_chat_edit = after_chat_edit
         self._toggleSettings = toggleSettings
     }
+
+    /// Init with a pre-filled model path (used by HuggingFace Hub "Load & Chat").
+    init(add_chat_dialog: Binding<Bool>,edit_chat_dialog:Binding<Bool>,
+         after_chat_edit: Binding<() -> Void>,toggleSettings: Binding<Bool>,
+         prefilledModelPath: String) {
+        self._add_chat_dialog = add_chat_dialog
+        self._edit_chat_dialog = edit_chat_dialog
+        self._after_chat_edit = after_chat_edit
+        self._toggleSettings = toggleSettings
+        self._model_file_path = State(initialValue: prefilledModelPath)
+        let baseName = (prefilledModelPath as NSString).deletingPathExtension
+        self._chat_title = State(initialValue: baseName)
+    }
     
     init(add_chat_dialog: Binding<Bool>,edit_chat_dialog:Binding<Bool>,
          chat_name:String,after_chat_edit: Binding<() -> Void>,toggleSettings: Binding<Bool>) {
