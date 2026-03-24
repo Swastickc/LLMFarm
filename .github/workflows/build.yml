@@ -52,7 +52,8 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF \
             -DLLAMA_BUILD_TESTS=OFF \
-            -DLLAMA_BUILD_SERVER=OFF
+            -DLLAMA_BUILD_SERVER=OFF \
+            -DLLAMA_CURL=OFF
           cmake --build build-ios-device --config Release -j $(sysctl -n hw.ncpu)
 
       - name: Build llama.cpp for iOS Simulator (arm64)
@@ -67,7 +68,8 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF \
             -DLLAMA_BUILD_EXAMPLES=OFF \
             -DLLAMA_BUILD_TESTS=OFF \
-            -DLLAMA_BUILD_SERVER=OFF
+            -DLLAMA_BUILD_SERVER=OFF \
+            -DLLAMA_CURL=OFF
           cmake --build build-ios-sim --config Release -j $(sysctl -n hw.ncpu)
 
       - name: Create llama.xcframework
