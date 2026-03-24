@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build-ios:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
@@ -29,6 +29,81 @@ jobs:
         run: |
           xcodebuild -version
           swift --version
+          cmake --version
+
+      # ── Build llama.xcframework from source ──────────────────────
+      # llmfarm_core.swift's Package.swift expects a binary target at
+      # llama.cpp/build-apple/llama.xcframework — we build it here.
+
+      - name: Apply LLMFarm patches to llama.cpp
+        run: |
+          cd llmfarm_core.swift/patches
+          bash apply_patches.sh || true
+
+      - name: Build llama.cpp for iOS device (arm64)
+        run: |
+          cmake -S llmfarm_core.swift/llama.cpp -B build-ios-device \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=16.4 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_METAL=ON \
+            -DGGML_METAL_EMBED_LIBRARY=ON \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_SERVER=OFF
+          cmake --build build-ios-device --config Release -j $(sysctl -n hw.ncpu)
+
+      - name: Build llama.cpp for iOS Simulator (arm64)
+        run: |
+          cmake -S llmfarm_core.swift/llama.cpp -B build-ios-sim \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_SYSROOT=$(xcrun --sdk iphonesimulator --show-sdk-path) \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=16.4 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_METAL=OFF \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_SERVER=OFF
+          cmake --build build-ios-sim --config Release -j $(sysctl -n hw.ncpu)
+
+      - name: Create llama.xcframework
+        run: |
+          set -e
+
+          # Combine all static libs per platform into one archive
+          echo "=== Device .a files ==="
+          find build-ios-device -name "*.a" | sort
+          libtool -static -o build-ios-device/libllama-all.a \
+            $(find build-ios-device -name "*.a" | sort)
+
+          echo "=== Simulator .a files ==="
+          find build-ios-sim -name "*.a" | sort
+          libtool -static -o build-ios-sim/libllama-all.a \
+            $(find build-ios-sim -name "*.a" | sort)
+
+          # Collect all public headers into one directory
+          mkdir -p llama-headers
+          cp -f llmfarm_core.swift/llama.cpp/include/*.h llama-headers/ 2>/dev/null || true
+          cp -f llmfarm_core.swift/llama.cpp/ggml/include/*.h llama-headers/ 2>/dev/null || true
+
+          # Create xcframework
+          XCFW_PATH="llmfarm_core.swift/llama.cpp/build-apple/llama.xcframework"
+          mkdir -p llmfarm_core.swift/llama.cpp/build-apple
+          xcodebuild -create-xcframework \
+            -library build-ios-device/libllama-all.a \
+            -headers llama-headers \
+            -library build-ios-sim/libllama-all.a \
+            -headers llama-headers \
+            -output "$XCFW_PATH"
+
+          echo "✅ llama.xcframework created"
+          ls -la "$XCFW_PATH"
+
+      # ── Build the LLMFarm Xcode project ─────────────────────────
 
       - name: Resolve dependencies
         run: xcodebuild -resolvePackageDependencies -project LLMFarm.xcodeproj -scheme LLMFarm_Release
