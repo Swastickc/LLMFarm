@@ -47,7 +47,7 @@ private struct SuggestedPromptsView: View {
                         HStack(spacing: 10) {
                             Image(systemName: prompt.icon)
                                 .font(.body)
-                                .foregroundStyle(.accentColor)
+                                .foregroundColor(.accentColor)
                                 .frame(width: 24)
                             Text(prompt.text)
                                 .font(.subheadline)

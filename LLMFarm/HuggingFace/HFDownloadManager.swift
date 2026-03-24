@@ -141,7 +141,7 @@ final class HFDownloadManager: NSObject, ObservableObject {
                 let mapped: LLMModel? = self.lock.withLock { self.taskModelMap[task.taskIdentifier] }
                 if mapped?.id == modelId {
                     task.cancel()
-                    self.lock.withLock { self.taskModelMap.removeValue(forKey: task.taskIdentifier) }
+                    _ = self.lock.withLock { self.taskModelMap.removeValue(forKey: task.taskIdentifier) }
                 }
             }
             Task { @MainActor in
@@ -253,7 +253,7 @@ extension HFDownloadManager: URLSessionDownloadDelegate {
             }
         }
 
-        lock.withLock { taskModelMap.removeValue(forKey: downloadTask.taskIdentifier) }
+        _ = lock.withLock { taskModelMap.removeValue(forKey: downloadTask.taskIdentifier) }
     }
 
     func urlSession(
@@ -296,6 +296,6 @@ extension HFDownloadManager: URLSessionDownloadDelegate {
             self.downloads[model.id]?.state = .failed(error: error.localizedDescription)
         }
 
-        lock.withLock { taskModelMap.removeValue(forKey: task.taskIdentifier) }
+        _ = lock.withLock { taskModelMap.removeValue(forKey: task.taskIdentifier) }
     }
 }
