@@ -92,10 +92,22 @@ jobs:
           libtool -static -o build-ios-sim/libllama-all.a \
             $(find build-ios-sim -name "*.a" | sort)
 
-          # Collect all public headers into one directory
+          # Collect all public headers and create module map for Swift
           mkdir -p llama-headers
           cp -f llmfarm_core.swift/llama.cpp/include/*.h llama-headers/ 2>/dev/null || true
           cp -f llmfarm_core.swift/llama.cpp/ggml/include/*.h llama-headers/ 2>/dev/null || true
+
+          # Swift needs a module.modulemap to import the C library
+          cat > llama-headers/module.modulemap << 'MODULEMAP'
+          module llama {
+              header "llama.h"
+              header "ggml.h"
+              export *
+          }
+          MODULEMAP
+
+          echo "=== Headers ==="
+          ls -la llama-headers/
 
           # Create xcframework
           XCFW_PATH="llmfarm_core.swift/llama.cpp/build-apple/llama.xcframework"
@@ -108,7 +120,7 @@ jobs:
             -output "$XCFW_PATH"
 
           echo "✅ llama.xcframework created"
-          ls -la "$XCFW_PATH"
+          ls -laR "$XCFW_PATH"
 
       # ── Build the LLMFarm Xcode project ─────────────────────────
 
